@@ -69,6 +69,11 @@ function updateMobsterNamesFile(currentMobsterNames: string) {
   writeToFile(currentMobstersFilePath, currentMobsterNames)
 }
 
+function callExternalHookOnTimerStart(data: any) {
+  const exec = require('child_process').exec;
+  exec(`~/.config/mobster/onTimerStart.sh -d ${data.driver} -u ${data.isBreak} -p ${data.minutes} -f ${data.navigator}`);
+}
+
 function showFeedbackForm() {
   new BrowserWindow({ show: true, frame: true, alwaysOnTop: true }).loadURL(
     'https://dillonkearns.typeform.com/to/k9P6iV'
@@ -217,6 +222,7 @@ function onReady() {
         shell.openExternal(ipc.data)
       } else if (ipc.message === 'StartTimer') {
         startTimer(ipc.data)
+        callExternalHookOnTimerStart(ipc.data)
         analytics.trackEvent({
           category: 'timer',
           action: ipc.data.isBreak ? 'start-break' : 'start-timer',
